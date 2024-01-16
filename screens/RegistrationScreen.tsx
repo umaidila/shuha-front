@@ -6,25 +6,51 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import alert from '../alert'
 import { backUrl } from "../properties";
+import { loginSuccess, userAlreadyExists, unknownError } from "../labelsRus";
 
 const RegistrationScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [emailText, setEmailText] = useState('');
     const [passwordText, setPasswordText] = useState('');
 
+    const navigateToLogin = () => {
+        navigation.navigate("Login", {
+            email: emailText,
+            password: passwordText
+        });
+    }
+
     const sendRegisterRequest = async () => {
-        const response = await fetch(backUrl + "/register", {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                email: emailText,
-                password: passwordText,
-              }),
-        })
-        alert("Good");
+        try {
+            const response = await fetch(backUrl + "/register", {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: emailText,
+                    password: passwordText,
+                }),
+            })
+            switch (response.status) {
+                case 201:
+                    alert(loginSuccess);
+                    navigateToLogin({
+                        email: emailText,
+                        password: passwordText
+                    });
+                    break;
+                case 409:
+                    alert(userAlreadyExists);
+                    break;
+                default:
+                    alert(unknownError);
+                    break;
+            }
+        } catch (error: any){
+            alert(error);
+        }
     }
 
     return (
