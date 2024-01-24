@@ -1,15 +1,22 @@
-export const setProfileName = async () => {
+import Variables from "./global";
+import {backUrl} from "./properties";
+import {TokenDto} from "./dto";
+
+export const getProfileName = async () => {
     try {
-        const response = await fetch(backUrl + "/register", {
-            method: 'POST',
+        const response = await fetch(backUrl + "/profile", {
+            method: 'GET',
             headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: emailText,
-                password: passwordText,
-            }),
+                Authorization: 'Bearer ' + Variables.getAccessToken(),
+            }
         })
+        const profileName = response.text();
+        switch (response.status) {
+            case 200:
+                let token = await response.json() as unknown as TokenDto;
+                Variables.setProfileName(token.token);
+        }
+    } catch (error: any) {
+        alert(error);
     }
 }

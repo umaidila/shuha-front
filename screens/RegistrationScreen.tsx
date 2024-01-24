@@ -36,10 +36,7 @@ const RegistrationScreen = () => {
             switch (response.status) {
                 case 201:
                     alert(loginSuccess);
-                    navigateToLogin({
-                        email: emailText,
-                        password: passwordText
-                    });
+                    navigateToLogin();
                     break;
                 case 409:
                     alert(userAlreadyExists);

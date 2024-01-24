@@ -7,6 +7,10 @@ import {useState} from "react";
 import {backUrl} from "../properties";
 import { unknownError } from "../labelsRus";
 import alert from '../alert';
+import Variables  from "../global";
+import {LoginResponse} from "../dto";
+
+
 const LoginScreen = (props: LoginNavigationProps) => {
     const route = useRoute();
     const initEmail = (props.route.params && props.route.params.email) ?? "";
@@ -30,10 +34,13 @@ const LoginScreen = (props: LoginNavigationProps) => {
                     password: passwordText,
                 }),
             })
+
             switch (response.status) {
                 case 200:
                     alert("Успешный вход");
-                    (global as any).token = response.text();
+                    let tokens = await response.json() as unknown as LoginResponse
+                    Variables.setAccessToken(tokens.accessToken);
+                    Variables.setRefreshToken(tokens.refreshToken);
                     break;
                 case 404:
                     alert("Неверные логин или пароль")
@@ -42,6 +49,8 @@ const LoginScreen = (props: LoginNavigationProps) => {
                     alert(unknownError)
                     break;
             }
+        } catch (error: any){
+            alert(error);
         }
     }
 
