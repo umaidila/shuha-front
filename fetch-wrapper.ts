@@ -1,14 +1,23 @@
-import { useRecoilState } from 'recoil';
+import {useRecoilState} from 'recoil';
 
-import { history } from '_helpers';
-import { authAtom } from '_state';
-import { useAlertActions } from '_actions';
+import {accessToken, refreshToken} from './global';
 
-export { useFetchWrapper };
+export {useFetchWrapper};
+
+type RequestHeaders = {
+    [key: string]: string | number
+}
+
+type RequestOptions = {
+    method: string,
+    headers: RequestHeaders,
+    body: string | undefined
+}
 
 function useFetchWrapper() {
-    const [auth, setAuth] = useRecoilState(authAtom);
-    const alertActions = useAlertActions();
+    const [accessTokenValue, setAccessTokenValue] = useRecoilState(accessToken);
+    const [refreshTokenValue, setRefreshTokenValue] = useRecoilState(refreshToken);
+
 
     return {
         get: request('GET'),
@@ -19,12 +28,13 @@ function useFetchWrapper() {
 
     function request(method: string) {
         return (url: string, body: string) => {
-            const requestOptions = {
+            const requestOptions: RequestOptions = {
                 method,
-                headers: authHeader(url)
-            };
+                headers: authHeader(url),
+                body: undefined
+            }
             if (body) {
-                requestOptions.headers['Content-Type'] = 'application/json';
+                requestOptions.headers['Content-Type'] =  'application/json' ;
                 requestOptions.body = JSON.stringify(body);
             }
             return fetch(url, requestOptions).then(handleResponse);
@@ -33,24 +43,19 @@ function useFetchWrapper() {
 
     // helper functions
 
-    function authHeader(url) {
-        // return auth header with jwt if user is logged in and request is to the api url
-        const token = auth?.token;
-        const isLoggedIn = !!token;
-        const isApiUrl = url.startsWith(process.env.REACT_APP_API_URL);
-        if (isLoggedIn && isApiUrl) {
-            return { Authorization: `Bearer ${token}` };
-        } else {
-            return {};
-        }
+    function authHeader(url: string): RequestHeaders {
+        return {Authorization: `Bearer ${accessTokenValue}`};
     }
 
-    function handleResponse(response) {
+    function handleResponse(response: Response) {
         return response.text().then(text => {
             const data = text && JSON.parse(text);
 
-            if (!response.ok) {
-                if ([401, 403].includes(response.status) && auth?.token) {
+            if (response.status == 403) {
+
+
+
+                if ([401, 403].includes(response.status)) {
                     // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
                     localStorage.removeItem('user');
                     setAuth(null);
@@ -64,5 +69,5 @@ function useFetchWrapper() {
 
             return data;
         });
-    }    
+    }
 }
