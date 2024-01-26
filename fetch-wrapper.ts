@@ -1,6 +1,12 @@
 import {useRecoilState} from 'recoil';
 
 import {accessToken, refreshToken} from './global';
+import alert from './alert';
+import {backUrl} from "./properties";
+import {TokenDto} from "./dto";
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from './types';
+import {StackNavigationProp} from "@react-navigation/stack";
 
 export {useFetchWrapper};
 
@@ -17,7 +23,7 @@ type RequestOptions = {
 function useFetchWrapper() {
     const [accessTokenValue, setAccessTokenValue] = useRecoilState(accessToken);
     const [refreshTokenValue, setRefreshTokenValue] = useRecoilState(refreshToken);
-
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     return {
         get: request('GET'),
@@ -27,24 +33,27 @@ function useFetchWrapper() {
     };
 
     function request(method: string) {
-        return (url: string, body: string) => {
-            const requestOptions: RequestOptions = {
-                method,
-                headers: authHeader(url),
-                body: undefined
+        return (url: string, body: any) => {
+            const headers = authHeader();
+
+            const requestInit: RequestInit = {
+                method
             }
             if (body) {
-                requestOptions.headers['Content-Type'] =  'application/json' ;
-                requestOptions.body = JSON.stringify(body);
+                headers.append('Content-Type',  'application/json');
+                requestInit.body = JSON.stringify(body);
             }
-            return fetch(url, requestOptions).then(handleResponse);
+            requestInit.headers = headers;
+            return fetch(backUrl + url, requestInit).then(handleResponse);
         }
     }
 
     // helper functions
 
-    function authHeader(url: string): RequestHeaders {
-        return {Authorization: `Bearer ${accessTokenValue}`};
+    function authHeader(): Headers {
+        const header = new Headers();
+        header.append('Authorization', `Bearer ${accessTokenValue}`);
+        return header;
     }
 
     function handleResponse(response: Response) {
@@ -69,5 +78,22 @@ function useFetchWrapper() {
 
             return data;
         });
+    }
+
+    async function updateRefreshToken() {
+        const requestInit: RequestInit = {
+            method: 'post',
+            headers: {'Content-Type':  'application/json'},
+            body: JSON.stringify({'token': refreshTokenValue})
+        }
+        const response = await fetch(backUrl + '/refresh', requestInit);
+
+        if (response.status == 200){
+            let token = await response.json() as unknown as TokenDto;
+            setAccessTokenValue(token.token);
+        } else {
+            alert("Время логина истекло, войдите заново");
+
+        }
     }
 }
