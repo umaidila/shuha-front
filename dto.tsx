@@ -6,3 +6,8 @@ export interface LoginResponse {
 export interface TokenDto {
     token: string
 }
+
+export interface LobbyDto {
+    id: number,
+
+}

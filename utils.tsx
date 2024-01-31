@@ -1,22 +1,23 @@
-import Variables from "./global";
+import { profileName} from './global';
 import {backUrl} from "./properties";
 import {TokenDto} from "./dto";
+import {useFetchWrapper} from "./fetch-wrapper";
+import {useRecoilState} from "recoil";
 
 export const getProfileName = async () => {
+    const [profileNameValue, setProfileNameValue] = useRecoilState(profileName);
     try {
-        const response = await fetch(backUrl + "/profile", {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + Variables.getAccessToken(),
-            }
-        })
-        const profileName = response.text();
-        switch (response.status) {
-            case 200:
-                let token = await response.json() as unknown as TokenDto;
-                Variables.setProfileName(token.token);
-        }
+         useFetchWrapper().get("/profile",null).then(
+             async response => {
+                 setProfileNameValue(await response.text());
+             }
+        );
+
     } catch (error: any) {
         alert(error);
     }
+}
+
+export const getLobbyList = async () => {
+
 }
