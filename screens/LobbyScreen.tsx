@@ -1,14 +1,19 @@
 import {Text, View} from "react-native";
 import { styles } from "../styles";
-
+import {useEffect, useState} from "react";
+import {getLobbyList} from "../utils";
 
 const LobbyScreen = () => {
 
-    
+    const [lobbyList, setLobbyList] = useState(null);
 
-    const lobbyList = () => {
-
-    }
+    useEffect(  () => {
+        const lobbyListFromResponse =  getLobbyList().then(
+            lobbyListFromResponse => {
+                setLobbyList(lobbyListFromResponse);
+            }
+        );
+    }, [])
 
 
     return (

@@ -1,6 +1,5 @@
-import { profileName} from './global';
-import {backUrl} from "./properties";
-import {TokenDto} from "./dto";
+import {profileName} from './global';
+import {LobbyDto} from "./dto";
 import {useFetchWrapper} from "./fetch-wrapper";
 import {useRecoilState} from "recoil";
 
@@ -18,6 +17,12 @@ export const getProfileName = async () => {
     }
 }
 
-export const getLobbyList = async () => {
-
+export const getLobbyList = async (): Promise<LobbyDto[]> => {
+    try {
+        const response = await useFetchWrapper().get("/lobby", null);
+        return await response.json() as unknown as LobbyDto[];
+    } catch (error) {
+        alert(error);
+        return [];
+    }
 }

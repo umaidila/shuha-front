@@ -7,7 +7,6 @@ import {useState} from "react";
 import {backUrl} from "../properties";
 import { unknownError } from "../labelsRus";
 import alert from '../alert';
-import Variables  from "../global";
 import {LoginResponse} from "../dto";
 
 
