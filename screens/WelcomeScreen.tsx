@@ -4,7 +4,7 @@ import {RootStackParamList} from "../types";
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from "@react-navigation/native";
 
-const WelcomeScreen = () => {
+function WelcomeScreen() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     const navigateToRegister = () => {

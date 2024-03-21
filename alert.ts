@@ -1,5 +1,5 @@
 // Alert.web.ts
-import { Alert, AlertButton, AlertStatic, Platform } from 'react-native';
+import { Alert, AlertButton, Platform } from 'react-native';
 
 const alertPolyfill = (title: string, message?: string, buttons?: AlertButton[]) => {
     

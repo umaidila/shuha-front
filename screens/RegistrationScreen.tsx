@@ -8,7 +8,7 @@ import alert from '../alert'
 import { backUrl } from "../properties";
 import { loginSuccess, userAlreadyExists, unknownError } from "../labelsRus";
 
-const RegistrationScreen = () => {
+function RegistrationScreen() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [emailText, setEmailText] = useState('');
     const [passwordText, setPasswordText] = useState('');
@@ -45,6 +45,7 @@ const RegistrationScreen = () => {
                     alert(unknownError);
                     break;
             }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any){
             alert(error);
         }

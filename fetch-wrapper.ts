@@ -8,16 +8,12 @@ import {useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from './types';
 import {StackNavigationProp} from "@react-navigation/stack";
 
-export {useFetchWrapper};
-
-type RequestHeaders = {
-    [key: string]: string | number
-}
+export {FetchWrapper};
 
 
-function useFetchWrapper() {
+function FetchWrapper() {
     const [accessTokenValue, setAccessTokenValue] = useRecoilState(accessToken);
-    const [refreshTokenValue, setRefreshTokenValue] = useRecoilState(refreshToken);
+    const [refreshTokenValue] = useRecoilState(refreshToken);
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     return {
@@ -27,8 +23,8 @@ function useFetchWrapper() {
         delete: request('DELETE')
     };
 
-    function request(method: string): (url: string, body: any) => Promise<Response> {
-        return async (url: string, body: any): Promise<Response> => {
+    function request(method: string): (url: string, body: unknown) => Promise<Response> {
+        return async (url: string, body: unknown): Promise<Response> => {
             const headers = authHeader();
 
             const requestInit: RequestInit = {
@@ -71,7 +67,7 @@ function useFetchWrapper() {
         const response = await fetch(backUrl + '/refresh', requestInit);
 
         if (response.status == 200) {
-            let token = await response.json() as unknown as TokenDto;
+            const token = await response.json() as unknown as TokenDto;
             setAccessTokenValue(token.token);
         } else {
             alert("Время логина истекло, войдите заново");

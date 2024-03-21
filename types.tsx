@@ -4,6 +4,7 @@ export type RootStackParamList = {
     Welcome: undefined;
     Register: undefined;
     Login: { email: string, password: string } | undefined;
+    Lobby: undefined;
 };
 
 export type WelcomeNavigationProps = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
