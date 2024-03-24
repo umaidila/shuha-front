@@ -7,7 +7,7 @@ import RegistrationScreen from "./screens/RegistrationScreen";
 import {RootStackParamList} from './types';
 import LoginScreen from "./screens/LoginScreen";
 import {RecoilRoot} from "recoil";
-import {LobbyScreen} from './screens/LobbyScreen';
+import LobbyScreen from './screens/LobbyScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 

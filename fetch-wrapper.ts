@@ -8,10 +8,9 @@ import {useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from './types';
 import {StackNavigationProp} from "@react-navigation/stack";
 
-export {FetchWrapper};
 
 
-function FetchWrapper() {
+function useFetchWrapper() {
     const [accessTokenValue, setAccessTokenValue] = useRecoilState(accessToken);
     const [refreshTokenValue] = useRecoilState(refreshToken);
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -75,3 +74,5 @@ function FetchWrapper() {
         }
     }
 }
+
+export {useFetchWrapper}
